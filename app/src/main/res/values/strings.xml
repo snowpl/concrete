@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Concrete</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="concrete_classes">
+        <item>C16/20</item>
+        <item>C20/25</item>
+        <item>C25/30</item>
+        <item>C30/37</item>
+        <item>C35/45</item>
+        <item>C40/50</item>
+        <item>C45/55</item>
+        <item>C50/60</item>
+    </string-array>
+</resources>
