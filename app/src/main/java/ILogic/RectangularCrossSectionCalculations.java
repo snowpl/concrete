@@ -2,6 +2,7 @@ package ILogic;
 
 import ViewModels.RectangularModel;
 import ViewModels.RectangularModelBase;
+import ViewModels.RectangularViewModel;
 
 /**
  * Created by kwerema on 2018-01-16.
@@ -9,7 +10,8 @@ import ViewModels.RectangularModelBase;
 
 public class RectangularCrossSectionCalculations implements IRectangularCrossSection {
 
-    public RectangularModel CalculateCrossSection(RectangularModelBase baseModel){
+    public RectangularViewModel CalculateCrossSection(RectangularModelBase baseModel){
+        RectangularViewModel result = new RectangularViewModel();
         RectangularModel model = new RectangularModel(baseModel);
         double SlMin = CheckSlMin(baseModel.RodDiameter);
         //Pobierać na podstawie klasy ekspozycji
@@ -22,7 +24,14 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
             model.As1 = CountAs1((model.fcd/1.5), model.b, model.Xeff, model.fyd);
             int numberOfRods = CountRodNumber(model.As1, baseModel.RodSurface);
             double Asprov = numberOfRods * baseModel.RodSurface;
+            double AsMin = GetAsMin(model);
             model.As1 = Asprov;
+            //Sprawdź czy zbrojenie przekracza zbrojenie minimalne
+            if(model.As1 < AsMin) {
+                model.message  = "Minimalne zbrojenie nie jest zapewnione, proszę zmienić warunki zbrojenia";
+                model.isProjectedGood = false;
+                //Zwróć model z błędem zbrojeniowym
+            }
             //zamiast baseModel.RodDiameter trzeba średnicę strzemion
             double Sl = (model.b - 2*CNom - baseModel.RodDiameter*0.001-numberOfRods*baseModel.RodDiameter*0.001)/(numberOfRods-1);
             if(Sl < SlMin) {
@@ -31,7 +40,15 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
                 model.isProjectedGood = false;
                 model.isSingleReinforced = false;
             }else{
-            model.isProjectedGood = true;
+            //sprawdzamy nośność przekroju
+                double xeff = CountRealXEff(model);
+                double Mrd = CountMrd(model, xeff);
+                if(model.Msd < Mrd){
+                    //Zwróć model z policzoną nośnością
+                    model.isProjectedGood = true;
+                    model.Capacity = model.Msd / Mrd;
+                }
+                //Zwróć model z błędem nośności
             }
         }
         else{
@@ -39,7 +56,7 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
             model.isProjectedGood = false;
             model.isSingleReinforced = false;
         }
-        return model;
+        return result;
     }
 
     public double CheckSlMin(int rodDiam){
@@ -71,5 +88,23 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
 
     private int CountRodNumber(double As1, double rodSurface){
         return (int)Math.round((As1/rodSurface)+0.5);
+    }
+
+    public double GetAsMin(RectangularModel model){
+        double AsMin = model.As1;
+        double asMin2 = 0.26*model.fctm/model.fyk * model.b * model.d;
+        double asMin3 = 0.0013*model.b*model.d;
+        AsMin = AsMin > asMin2 ? AsMin : asMin2;
+        return AsMin > asMin3 ? AsMin : asMin3;
+    }
+
+    private double CountRealXEff(RectangularModel model){
+        double xeff = model.fyd*model.As1/model.fcd/model.b;
+        double xeffLim = model.d*model.MieffLim;
+        return xeff < xeffLim ? xeff : xeffLim;
+    }
+
+    private double CountMrd(RectangularModel model, double xeff){
+        return model.fcd*model.b*xeff*(model.d-0.5*xeff);
     }
 }

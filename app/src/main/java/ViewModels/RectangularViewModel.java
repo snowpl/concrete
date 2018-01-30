@@ -14,4 +14,7 @@ public class RectangularViewModel {
         this.doubleReinforcedCalculations = doubleReinforcedCalculations;
         this.isSingleReinforced = isSingleReinforced;
     }
+
+    public RectangularViewModel() {
+    }
 }

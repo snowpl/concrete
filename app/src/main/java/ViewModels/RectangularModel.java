@@ -15,7 +15,7 @@ public class RectangularModel extends RectangularModelBase {
         this.Msd = baseModel.Msd;
     }
 
-    public double Sceff, Mieff, Es, MieffLim, Xeff, As1;
+    public double Sceff, Mieff, Es, MieffLim, Xeff, As1, Capacity;
     public boolean isProjectedGood, isSingleReinforced;
     public String message;
 }
