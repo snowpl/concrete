@@ -4,6 +4,8 @@ import ViewModels.RectangularModel;
 import ViewModels.RectangularModelBase;
 import ViewModels.RectangularViewModel;
 
+import static java.lang.Math.round;
+
 /**
  * Created by kwerema on 2018-01-16.
  */
@@ -47,8 +49,8 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
                     //Zwróć model z policzoną nośnością
                     model.isProjectedGood = true;
                     model.Capacity = model.Msd / Mrd;
-                    double capLimit = (1 - model.Capacity)*100;
-                    model.message = String.format("Przekrój zapropojektowany poprawnie z zapasem {0}", capLimit);
+                    int capLimit = (int)round((1 - model.Capacity)*100);
+                    model.message = String.format("Przekrój zapropojektowany poprawnie z %d %% zapasem nośności.", capLimit);
                     result.singleReinforcedCalculations = model;
                     result.isSingleReinforced = true;
                 }
@@ -91,7 +93,7 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
     }
 
     private int CountRodNumber(double As1, double rodSurface){
-        return (int)Math.round((As1/rodSurface)+0.5);
+        return (int) round((As1/rodSurface)+0.5);
     }
 
     public double GetAsMin(RectangularModel model){

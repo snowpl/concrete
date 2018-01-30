@@ -48,6 +48,7 @@ public class RectangularCrossSectionResultActivity extends Activity {
         TextView t3 = (TextView) findViewById(R.id.textView10);
         TextView t4 = (TextView) findViewById(R.id.textView11);
         TextView t5 = (TextView) findViewById(R.id.textView12);
+        TextView message = (TextView) findViewById(R.id.textView14);
         if(model.isSingleReinforced){
             t1.append(" pojedyńczo zbrojony");
             t2.append(String.valueOf(model.singleReinforcedCalculations.As1));
@@ -57,6 +58,7 @@ public class RectangularCrossSectionResultActivity extends Activity {
         t3.append(String.valueOf(model.singleReinforcedCalculations.Xeff));
         t4.append(String.valueOf(model.singleReinforcedCalculations.Mieff));
         t5.append(String.valueOf(model.singleReinforcedCalculations.Capacity));
+        message.append(String.valueOf(model.singleReinforcedCalculations.message));
     }
 
 }
