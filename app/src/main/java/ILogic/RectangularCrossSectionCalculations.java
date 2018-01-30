@@ -15,9 +15,12 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
     public RectangularViewModel CalculateCrossSection(RectangularModelBase baseModel){
         RectangularViewModel result = new RectangularViewModel();
         RectangularModel model = new RectangularModel(baseModel);
+        //Dodać warunek na dg + delta dg
         double SlMin = CheckSlMin(baseModel.RodDiameter);
         //Pobierać na podstawie klasy ekspozycji
         double CNom = 0.025;
+        //wyliczać d na podstawie h-a1, gdzie a1= CNom + StrzemieDiameter + 0.5RodDiameter
+        model.d = model.h - (CNom + baseModel.RodDiameter/2*0.001 + 0.006);
         model.Sceff = CountSceff(model.Msd, (model.fcd/1.5), model.b, model.d);
         model.Mieff = CountMieff(model.Sceff);
         model.isSingleReinforced = IsMieffGreaterThanLim(model.Mieff, model.fyd, model.Es);
@@ -65,6 +68,12 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
         return result;
     }
 
+    public RectangularModel CalculateDoubleReinforcementCrossSection(RectangularModel model){
+        RectangularModel doubleRModel = new RectangularModel(model);
+
+        return doubleRModel;
+    }
+
     public double CheckSlMin(int rodDiam){
         return rodDiam > 20 ? rodDiam*0.001 : 0.02;
     }
@@ -107,7 +116,7 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
     private double CountRealXEff(RectangularModel model){
         double xeff = model.fyd*model.As1/model.fcd/model.b/10000;
         double xeffLim = model.d*model.Mieff;
-        xeff = xeff > xeffLim ? xeff : xeffLim;
+        xeff = xeff < xeffLim ? xeff : xeffLim;
         return xeff;
     }
 
