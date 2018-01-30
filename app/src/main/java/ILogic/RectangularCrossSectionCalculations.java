@@ -33,8 +33,8 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
                 //Zwróć model z błędem zbrojeniowym
             }
             //zamiast baseModel.RodDiameter trzeba średnicę strzemion
-            double Sl = (model.b - 2*CNom - baseModel.RodDiameter*0.001-numberOfRods*baseModel.RodDiameter*0.001)/(numberOfRods-1);
-            if(Sl < SlMin) {
+            double Sl = (model.b - 2*CNom - baseModel.RodDiameter*0.001-numberOfRods*baseModel.RodDiameter*0.001)/(numberOfRods-1)*100;
+            if(Sl < SlMin && false) {
                 model.message = "Uwaga: Pręty nie zmieszczą się w jednym rzędzie, obliczenia należy powtórzyć dla dwóch rzędów zbrojenia.";
                 //Implementacja dla modelu podwójnie zbrojonego
                 model.isProjectedGood = false;
@@ -47,6 +47,10 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
                     //Zwróć model z policzoną nośnością
                     model.isProjectedGood = true;
                     model.Capacity = model.Msd / Mrd;
+                    double capLimit = (1 - model.Capacity)*100;
+                    model.message = String.format("Przekrój zapropojektowany poprawnie z zapasem {0}", capLimit);
+                    result.singleReinforcedCalculations = model;
+                    result.isSingleReinforced = true;
                 }
                 //Zwróć model z błędem nośności
             }
@@ -99,12 +103,13 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
     }
 
     private double CountRealXEff(RectangularModel model){
-        double xeff = model.fyd*model.As1/model.fcd/model.b;
-        double xeffLim = model.d*model.MieffLim;
-        return xeff < xeffLim ? xeff : xeffLim;
+        double xeff = model.fyd*model.As1/model.fcd/model.b/10000;
+        double xeffLim = model.d*model.Mieff;
+        xeff = xeff > xeffLim ? xeff : xeffLim;
+        return xeff;
     }
 
     private double CountMrd(RectangularModel model, double xeff){
-        return model.fcd*model.b*xeff*(model.d-0.5*xeff);
+        return model.fcd*model.b*xeff*(model.d-0.5*xeff)*1000;
     }
 }
