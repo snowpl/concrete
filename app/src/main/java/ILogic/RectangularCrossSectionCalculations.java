@@ -23,8 +23,8 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
         model.d = model.h - (CNom + baseModel.RodDiameter/2*0.001 + 0.006);
         model.Sceff = CountSceff(model.Msd, (model.fcd/1.5), model.b, model.d);
         model.Mieff = CountMieff(model.Sceff);
-        model.isSingleReinforced = IsMieffGreaterThanLim(model.Mieff, model.fyd, model.Es);
-        if(model.isSingleReinforced){
+        result.isSingleReinforced = IsMieffGreaterThanLim(model.Mieff, model.fyd, model.Es);
+        if(result.isSingleReinforced){
             model.Xeff = CountXEff(model.Mieff, model.d);
             model.As1 = CountAs1((model.fcd/1.5), model.b, model.Xeff, model.fyd);
             int numberOfRods = CountRodNumber(model.As1, baseModel.RodSurface);
@@ -35,42 +35,58 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
             if(model.As1 < AsMin) {
                 model.message  = "Minimalne zbrojenie nie jest zapewnione, proszę zmienić warunki zbrojenia";
                 model.isProjectedGood = false;
-                //Zwróć model z błędem zbrojeniowym
+                result.singleReinforcedCalculations = model;
+                return result;
             }
             //zamiast baseModel.RodDiameter trzeba średnicę strzemion
             double Sl = (model.b - 2*CNom - baseModel.RodDiameter*0.001-numberOfRods*baseModel.RodDiameter*0.001)/(numberOfRods-1)*100;
+            //Sprawdź czy rozstaw między prętami będzie odpowiedni
+            //SPRAWDZIC POPRAWNOSC SL I SLMIN!!!!
             if(Sl < SlMin && false) {
                 model.message = "Uwaga: Pręty nie zmieszczą się w jednym rzędzie, obliczenia należy powtórzyć dla dwóch rzędów zbrojenia.";
                 //Implementacja dla modelu podwójnie zbrojonego
-                model.isProjectedGood = false;
-                model.isSingleReinforced = false;
+                result.isSingleReinforced = false;
+                result.singleReinforcedCalculations = model;
+                result.doubleReinforcedCalculations = CalculateDoubleReinforcementCrossSection(model);
+                return result;
             }else{
             //sprawdzamy nośność przekroju
                 double xeff = CountRealXEff(model);
                 double Mrd = CountMrd(model, xeff);
+                model.Capacity = model.Msd / Mrd;
+                //Zwróć model z zapasem nośnością
                 if(model.Msd < Mrd){
-                    //Zwróć model z policzoną nośnością
                     model.isProjectedGood = true;
-                    model.Capacity = model.Msd / Mrd;
                     int capLimit = (int)round((1 - model.Capacity)*100);
                     model.message = String.format("Przekrój zapropojektowany poprawnie z %d %% zapasem nośności.", capLimit);
                     result.singleReinforcedCalculations = model;
                     result.isSingleReinforced = true;
+                    return result;
                 }
                 //Zwróć model z błędem nośności
+                int capLimit = (int)round((model.Capacity-1)*100);
+                model.message = String.format("Warunek nośności nie jest spełniony. Nośność przekroczona o %d %%.", capLimit);
+                model.isProjectedGood = false;
+                result.singleReinforcedCalculations = model;
+                result.isSingleReinforced = true;
+                return result;
             }
         }
         else{
             //Implementacja dla modelu podwójnie zbrojonego
-            model.isProjectedGood = false;
-            model.isSingleReinforced = false;
+            result.isSingleReinforced = false;
+            result.doubleReinforcedCalculations = CalculateDoubleReinforcementCrossSection(model);
         }
         return result;
     }
 
     public RectangularModel CalculateDoubleReinforcementCrossSection(RectangularModel model){
         RectangularModel doubleRModel = new RectangularModel(model);
-
+        //Liczmy Mlin
+        //Liczymy As1'
+        //Liczymy DeltaM
+        //Liczymy As2
+        //Liczymy As1
         return doubleRModel;
     }
 
@@ -109,8 +125,8 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
         double AsMin = model.As1;
         double asMin2 = 0.26*model.fctm/model.fyk * model.b * model.d;
         double asMin3 = 0.0013*model.b*model.d;
-        AsMin = AsMin > asMin2 ? AsMin : asMin2;
-        return AsMin > asMin3 ? AsMin : asMin3;
+        AsMin = Math.max(asMin3, Math.max(AsMin, asMin2));
+        return AsMin;
     }
 
     private double CountRealXEff(RectangularModel model){

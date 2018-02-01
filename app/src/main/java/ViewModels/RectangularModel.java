@@ -16,6 +16,6 @@ public class RectangularModel extends RectangularModelBase {
     }
 
     public double Sceff, Mieff, Es, MieffLim, Xeff, As1, Capacity;
-    public boolean isProjectedGood, isSingleReinforced;
+    public boolean isProjectedGood;
     public String message;
 }
