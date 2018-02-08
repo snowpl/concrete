@@ -15,9 +15,55 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-/**
- * Created by kwerema on 2018-02-07.
- */
+
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class TBeamCrossSectionActivity extends Activity {
+
+    @BindView(R.id.linear_main)
+    LinearLayout linearLayout;
+
+    @BindView(R.id.math_view)
+    mathview.math.MathView mathView;
+
+    @BindView(R.id.input_view)
+    EditText inputView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.tbeam_cross_section_main);
+        ButterKnife.bind(this);
+        mathView.setText("\\ax^2 + bx + c = 0\\" + " or displayed formula: $$\\sum_{i=0}^n i^2 = \\frac{(n^2+n)(2n+1)}{6}$$");
+
+        inputView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mathView.setText(inputView.getText().toString());
+                mathView.setText("\\(ax^2 + bx + c = 0\\" + "or displayed formula: $$\\sum_{i=0}^n i^2 = \\frac{(n^2+n)(2n+1)}{6}$$");
+            }
+        });
+    }
+
+    /**
+     * Created by kwerema on 2018-02-07.
 
 public class TBeamCrossSectionActivity extends Activity {
     private WebView articleContent;
@@ -29,7 +75,7 @@ public class TBeamCrossSectionActivity extends Activity {
         Toolbar topToolBar = (Toolbar)findViewById(R.id.toolbar);
         /*setSupportActionBar(topToolBar);
         topToolBar.setLogo(R.drawable.logo);
-        topToolBar.setLogoDescription(getResources().getString(R.string.logo_desc));*/
+        topToolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
         articleContent = (WebView) findViewById(R.id.formula_page);
         articleContent.getSettings().setJavaScriptEnabled(true);
         articleContent.getSettings().setBuiltInZoomControls(true);
@@ -60,4 +106,5 @@ public class TBeamCrossSectionActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+     */
 }

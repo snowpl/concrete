@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.kwerema.concrete.TBeamCrossSectionActivity">
-<WebView
-    android:id="@+id/formula_page"
+    android:id="@+id/linear_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerHorizontal="true"
-    android:textSize="14sp"
-    android:scrollbars="none" />
-</RelativeLayout>
+    tools:context="com.example.kwerema.concrete.TBeamCrossSectionActivity"
+    android:orientation="vertical"
+    android:weightSum="2">
+
+    <mathview.math.MathView
+        android:id="@+id/math_view"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </mathview.math.MathView>
+    <EditText
+        android:id="@+id/input_view"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textNoSuggestions|textMultiLine"
+        tools:ignore="LabelFor"/>
+</LinearLayout>
