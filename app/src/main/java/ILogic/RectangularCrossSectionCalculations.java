@@ -90,7 +90,11 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
         return doubleRModel;
     }
 
-    public double CheckSlMin(int rodDiam){
+    public double CountMlim(double fcd, double b, double xefflim, double d){
+        return fcd*b*xefflim*(d-0.5*xefflim);
+    }
+
+    public double CheckSlMin(int rodDiam) {
         return rodDiam > 20 ? rodDiam*0.001 : 0.02;
     }
 
@@ -101,6 +105,7 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
     }
 
     public double CountMieff(double Sceff) {
+
         return 1 - Math.sqrt(1-(2*Sceff));
     }
 

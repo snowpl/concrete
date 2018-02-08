@@ -3,14 +3,8 @@ package com.example.kwerema.concrete;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
-
-import com.f2prateek.dart.Dart;
-import com.f2prateek.dart.InjectExtra;
-
 import org.parceler.Parcels;
-
 import ILogic.RectangularCrossSectionCalculations;
-import ViewModels.RectangularModel;
 import ViewModels.RectangularModelBase;
 import ViewModels.RectangularViewModel;
 
@@ -19,7 +13,6 @@ import ViewModels.RectangularViewModel;
  */
 
 public class RectangularCrossSectionResultActivity extends Activity {
-    //@InjectExtra RectangularModelBase userInput;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
