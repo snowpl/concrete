@@ -29,6 +29,11 @@
             android:label="Rectangular Cross Section result">
 
         </activity>
+
+        <activity android:name=".TBeamCrossSectionActivity"
+            android:label="T Beam Cross Section">
+
+        </activity>
     </application>
 
 </manifest>

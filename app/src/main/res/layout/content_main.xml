@@ -9,6 +9,7 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
+        android:id="@+id/textView15"
         android:layout_width="161dp"
         android:layout_height="53dp"
         android:text="Wybierz przekrój"
@@ -23,16 +24,22 @@
         android:id="@+id/button"
         android:layout_width="160dp"
         android:layout_height="257dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:text="Przekrój teowy"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="127dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="165dp"
         android:layout_height="251dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:text="Przekrój prostokątny"
-        tools:layout_editor_absoluteX="208dp"
-        tools:layout_editor_absoluteY="129dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintTop_toTopOf="@+id/button" />
 
 </android.support.constraint.ConstraintLayout>

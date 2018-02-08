@@ -35,10 +35,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button next = findViewById(R.id.button2);
-        next.setOnClickListener(new View.OnClickListener(){
+        Button btnRectCrossSection = findViewById(R.id.button2);
+        btnRectCrossSection.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 Intent myIntent = new Intent(view.getContext(), RectangularCrossSectionActivity.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+
+        Button btnTBeamCrossSection = findViewById(R.id.button);
+        btnTBeamCrossSection.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                Intent myIntent = new Intent(view.getContext(), TBeamCrossSectionActivity.class);
                 startActivityForResult(myIntent, 0);
             }
         });
