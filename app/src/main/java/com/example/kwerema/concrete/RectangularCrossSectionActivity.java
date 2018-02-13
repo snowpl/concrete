@@ -33,16 +33,12 @@ public class RectangularCrossSectionActivity extends Activity {
         Button next = findViewById(R.id.rectangular_check);
         next.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
-/*                Intent intentt = Henson.with(this)
-                        .gotoRectangularCrossSectionResultActivity()
-                        .modelBase(userInput)
-                        .build();*/
 
                 RectangularModelBase userInput = new RectangularModelBase();
 
                 EditText numD = (EditText) findViewById(R.id.modelD);
-                double d = Double.parseDouble(numD.getText().toString());
-                userInput.d = d/1000;
+                double StirrupsDiameter = Double.parseDouble(numD.getText().toString());
+                userInput.StirrupsDiameter = StirrupsDiameter/1000;
                 EditText numH = (EditText) findViewById(R.id.modelH);
                 double h = Double.parseDouble(numH.getText().toString());
                 userInput.h = h/1000;

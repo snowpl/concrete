@@ -16,6 +16,7 @@ public class RectangularModelBase {
     public double fctm;
     public double fyk;
     public double Msd;
+    public double StirrupsDiameter;
     public double RodSurface;
     public int RodDiameter;
     public boolean isValid;
@@ -24,16 +25,17 @@ public class RectangularModelBase {
 
     public RectangularModelBase(){}
 
-    public RectangularModelBase(double b, double h, double d, double Msd){
+    public RectangularModelBase(double b, double h, double stirrupsDiameter, double Msd){
         this.h = h;
         this.b = b;
-        this.d = d;
+        this.StirrupsDiameter = stirrupsDiameter;
         this.Msd = Msd;
     }
 
-    public RectangularModelBase(double b, double h, double d, double fyd, double fctm, double fyk, double fcd, double Msd, double rodSurface, int rodDiamater, boolean isValid, double minDiam, double maxDiam){
+    public RectangularModelBase(double b, double h, double stirrupsDiameter, double d, double fyd, double fctm, double fyk, double fcd, double Msd, double rodSurface, int rodDiamater, boolean isValid, double minDiam, double maxDiam){
         this.h = h;
         this.b = b;
+        this.StirrupsDiameter = stirrupsDiameter;
         this.d = d;
         this.fctm = fctm;
         this.fyk = fyk;

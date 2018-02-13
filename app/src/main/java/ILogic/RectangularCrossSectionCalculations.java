@@ -19,30 +19,40 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
         double SlMin = CheckSlMin(baseModel.RodDiameter);
         //Pobierać na podstawie klasy ekspozycji
         double CNom = 0.025;
-        //wyliczać d na podstawie h-a1, gdzie a1= CNom + StrzemieDiameter + 0.5RodDiameter
-        model.d = model.h - (CNom + baseModel.RodDiameter/2*0.001 + 0.006);
+        //Położenie osi ciężkości zbrojenia głównego
+        model.a1 = (CNom + baseModel.RodDiameter/2*0.001 + baseModel.StirrupsDiameter * 0.001);
+        //Wysokość użyteczna przekroju
+        model.d = model.h - model.a1;
+        //Bezwymiarowa wartość momentu zginającego przekrój
         model.Sceff = CountSceff(model.Msd, (model.fcd/1.5), model.b, model.d);
+        //Względna efektywna wysokość strefy ściskanej i porównanie z wartością graniczną
         model.Mieff = CountMieff(model.Sceff);
         result.isSingleReinforced = IsMieffGreaterThanLim(model.Mieff, model.fyd, model.Es);
+        //Mieff < Mieff,lim
         if(result.isSingleReinforced){
+            //Umowne położenie osi obojętnej przekroju
             model.Xeff = CountXEff(model.Mieff, model.d);
+            //łączne pole przekroju podłużnego zbrojenia
             model.As1 = CountAs1((model.fcd/1.5), model.b, model.Xeff, model.fyd);
+            //Rozmieszczenie prętów zbrojenia głównego w 1 rzędzie
+            ////Liczba prętów
             int numberOfRods = CountRodNumber(model.As1, baseModel.RodSurface);
             double Asprov = numberOfRods * baseModel.RodSurface;
+            //sprawdzenie czy zostało zapewnione minimalne normowe zbrojenie
             double AsMin = GetAsMin(model);
             model.As1 = Asprov;
-            //Sprawdź czy zbrojenie przekracza zbrojenie minimalne
             if(model.As1 < AsMin) {
                 model.message  = "Minimalne zbrojenie nie jest zapewnione, proszę zmienić warunki zbrojenia";
                 model.isProjectedGood = false;
                 result.singleReinforcedCalculations = model;
                 return result;
             }
-            //zamiast baseModel.RodDiameter trzeba średnicę strzemion
-            double Sl = (model.b - 2*CNom - baseModel.RodDiameter*0.001-numberOfRods*baseModel.RodDiameter*0.001)/(numberOfRods-1)*100;
+            //rozmieszczenie prętów zbrojenia w jednym rzędzie
+            double Sl = (model.b - 2*CNom - 2*baseModel.StirrupsDiameter-numberOfRods*baseModel.RodDiameter*0.001);
+            Sl = Sl/(numberOfRods-1);
             //Sprawdź czy rozstaw między prętami będzie odpowiedni
             //SPRAWDZIC POPRAWNOSC SL I SLMIN!!!!
-            if(Sl < SlMin && false) {
+            if(Sl < SlMin) {
                 model.message = "Uwaga: Pręty nie zmieszczą się w jednym rzędzie, obliczenia należy powtórzyć dla dwóch rzędów zbrojenia.";
                 //Implementacja dla modelu podwójnie zbrojonego
                 result.isSingleReinforced = false;
@@ -51,32 +61,37 @@ public class RectangularCrossSectionCalculations implements IRectangularCrossSec
                 return result;
             }else{
             //sprawdzamy nośność przekroju
-                double xeff = CountRealXEff(model);
-                double Mrd = CountMrd(model, xeff);
-                model.Capacity = model.Msd / Mrd;
-                //Zwróć model z zapasem nośnością
-                if(model.Msd < Mrd){
-                    model.isProjectedGood = true;
-                    int capLimit = (int)round((1 - model.Capacity)*100);
-                    model.message = String.format("Przekrój zapropojektowany poprawnie z %d %% zapasem nośności.", capLimit);
-                    result.singleReinforcedCalculations = model;
-                    result.isSingleReinforced = true;
-                    return result;
-                }
-                //Zwróć model z błędem nośności
-                int capLimit = (int)round((model.Capacity-1)*100);
-                model.message = String.format("Warunek nośności nie jest spełniony. Nośność przekroczona o %d %%.", capLimit);
-                model.isProjectedGood = false;
                 result.singleReinforcedCalculations = model;
-                result.isSingleReinforced = true;
+                result = CheckBearingCapacity(result);
                 return result;
             }
         }
+        //Implementacja dla modelu podwójnie zbrojonego
         else{
-            //Implementacja dla modelu podwójnie zbrojonego
             result.isSingleReinforced = false;
             result.doubleReinforcedCalculations = CalculateDoubleReinforcementCrossSection(model);
         }
+        return result;
+    }
+
+    public RectangularViewModel CheckBearingCapacity(RectangularViewModel result){
+        RectangularModel model = new RectangularModel(result.singleReinforcedCalculations);
+        double xeff = CountRealXEff(model);
+        double Mrd = CountMrd(model, xeff);
+        model.Capacity = model.Msd / Mrd;
+        //Zwróć model z zapasem nośnością
+        if(model.Msd < Mrd){
+            model.isProjectedGood = true;
+            int capLimit = (int)round((1 - model.Capacity)*100);
+            model.message = String.format("Przekrój zapropojektowany poprawnie z %d %% zapasem nośności.", capLimit);
+        }else{
+            //Zwróć model z błędem nośności
+            int capLimit = (int) round((model.Capacity - 1) * 100);
+            model.message = String.format("Warunek nośności nie jest spełniony. Nośność przekroczona o %d %%.", capLimit);
+            model.isProjectedGood = false;
+        }
+        result.singleReinforcedCalculations = model;
+        result.isSingleReinforced = true;
         return result;
     }
 
